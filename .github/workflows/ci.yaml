@@ -1,0 +1,62 @@
+# https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+    tags:
+      - '*'
+
+jobs:
+
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+
+      - name: Environment information
+        run: |
+          uname
+          uname -a
+
+      - uses: actions/checkout@v2
+
+      # Probably will need this later
+      # - name: Install fzf
+      #   run: sudo apt-get -y install fzf
+
+      - name: Download Neovim
+        run: |
+          mkdir -p build
+          wget https://github.com/neovim/neovim/releases/download/v0.7.0/nvim.appimage
+          chmod +x nvim.appimage
+          mv nvim.appimage ./build/nvim
+          echo "${PWD}/build" >> $GITHUB_PATH
+
+      - name: Install Plugins
+        run: |
+          nvim --headless -u ./bootstrap.lua --cmd 'set rtp+=.'
+
+      # Probably will need this later
+      # - name: Install Plugins
+      #   run: |
+      #     nvim --headless -u ./home/.config/nvim.symlink/bootstrap.lua  --cmd 'set rtp+=./home/.config/nvim.symlink' +quit
+
+      - name: Setup upterm session
+        env:
+          DEBUG_SSH: ${{ secrets.DebugSSH }}
+        if: ${{ env.DEBUG_SSH == 'true' }}
+        uses: lhotari/action-upterm@v1
+        with:
+          ## limits ssh access and adds the ssh public key for the user which triggered the workflow
+          # limit-access-to-actor: true
+          ## limits ssh access and adds the ssh public keys of the listed GitHub users
+          limit-access-to-users: hjdivad,rwjblue
+
+      - name: test
+        run: |
+          make --version
+          make -f Makefile.ci test

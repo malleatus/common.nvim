@@ -1,0 +1,32 @@
+SHELL := bash
+.SHELLFLAGS := -eu -o pipefail -c
+.ONESHELL:
+.DELETE_ON_ERROR:
+MAKEFLAGS += --warn-undefined-hvariables
+MAKEFLAGS += --no-builtin-rules
+
+ifeq ($(origin .RECIPEPREFIX), undefined)
+  $(error This Make does not support .RECIPEPREFIX. Please use GNU Make 4.0 or later. Perhaps you meant gmake?)
+endif
+# .RECIPEPREFIX = >
+
+# no colours in ci, overwrite in Makefile for better term output
+red := ''
+green := ''
+yellow := ''
+blue := ''
+cyan := ''
+cyan80 := ''
+grey500 := ''
+grey300 := ''
+bold := ''
+underline := ''
+reset := ''
+
+
+test: # run tests
+	@pwd
+	nvim --headless --noplugin -u tests/runner_init.vim -c "PlenaryBustedDirectory tests/malleatus/ {minimal_init = 'tests/test_init.vim'}"
+
+.PHONY: test
+.DEFAULT_GOAL := test
