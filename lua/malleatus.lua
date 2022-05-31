@@ -11,7 +11,7 @@ local function setup_config()
   vim.o.timeout     = true
   vim.o.timeoutlen  = 1000
   vim.o.ttimeoutlen = 50
-  vim.o.swapfile    = false -- don't write swap files
+  vim.o.swapfile    = true -- neovim writes swap files to a reasonable location
   vim.o.mouse       = 'a' -- allow resizing windows via the mouse
   vim.o.undofile    = true -- preserve undo history across sessions
   vim.o.lazyredraw  = true -- don't redraw during macros
