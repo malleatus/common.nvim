@@ -1,3 +1,5 @@
+local M = {}
+
 local function setup_config()
 
   ---use comma as <leader> (default \)
@@ -102,11 +104,9 @@ local function setup_ftdetect()
   })
 end
 
-local function setup(config)
+function M.setup(config)
   setup_config()
   setup_ftdetect()
 end
 
-return {
-  setup = setup,
-}
+return M
