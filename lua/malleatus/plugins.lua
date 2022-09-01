@@ -1,3 +1,5 @@
+local M = {}
+
 local function check_or_install_paq()
   local paq_install_path = vim.fn.stdpath('data') .. '/site/pack/paqs/start/paq-nvim'
   if vim.fn.empty(vim.fn.glob(paq_install_path)) > 0 then
@@ -15,7 +17,7 @@ local function check_or_install_paq()
 end
 
 --- Installs missing plugins and updates existing plugins
-local function update_plugins()
+function M.update_plugins()
   check_or_install_paq()
 
   local paq = require('paq')
@@ -30,6 +32,4 @@ local function update_plugins()
   paq.install() -- :he paq.install
 end
 
-return {
-  update_plugins = update_plugins,
-}
+return M
