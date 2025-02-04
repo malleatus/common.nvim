@@ -20,28 +20,21 @@ jobs:
           uname
           uname -a
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      # Probably will need this later
-      # - name: Install fzf
-      #   run: sudo apt-get -y install fzf
+      # https://github.com/folke/github/blob/main/neovim/action.yml
+      - uses: folke/github/neovim@main
 
-      - name: Download Neovim
-        run: |
-          mkdir -p build
-          wget https://github.com/neovim/neovim/releases/download/v0.7.0/nvim.appimage
-          chmod +x nvim.appimage
-          mv nvim.appimage ./build/nvim
-          echo "${PWD}/build" >> $GITHUB_PATH
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y libreadline-dev
 
-      - name: Install Plugins
-        run: |
-          nvim --headless -u ./bootstrap.lua --cmd 'set rtp+=.'
-
-      # Probably will need this later
-      # - name: Install Plugins
-      #   run: |
-      #     nvim --headless -u ./home/.config/nvim.symlink/bootstrap.lua  --cmd 'set rtp+=./home/.config/nvim.symlink' +quit
+      - name: Test Cache
+        uses: actions/cache@v4
+        with:
+          path: .tests
+          key: ${{ runner.os }}-tests-${{ hashFiles('tests/minit.lua', 'scripts/test') }}
+      - name: Run Tests
+        run: ./scripts/test
 
       - name: Setup upterm session
         env:
